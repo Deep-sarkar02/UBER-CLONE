@@ -7,9 +7,27 @@ const dotenv = require("dotenv")
 dotenv.config();
 // set up the corse
 const cors = require("cors")
+
+// require the function from the db.js
+const connectToDb = require("./db/db");
+
+
+// require the userroutes
+const userroutes = require('./routes/user.routes')
+
+//step - 6
+// require the cookeie parser
+const cookieParser = require('cookie-parser');
+app.use(cookieParser()); // use the cookie parser middleware to parse the cookies
+
+
+
+// call the conncet to db
+connectToDb()
 // app.use 
 app.use(cors())
-
+app.use(express.json());
+app.use(express.urlencoded({extended : true}))
 
 
 
@@ -21,6 +39,19 @@ app.get("/" , (req ,res)=>
 {
     res.send("hello world");
 })
+
+//user routes
+// create the route and also we iwll pass trhe param
+app.use('/users' , userroutes)
+
+
+
+
+
+
+
+
+
 
 // export the app
 module.exports =app;
