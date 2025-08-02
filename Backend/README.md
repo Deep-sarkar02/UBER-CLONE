@@ -257,3 +257,119 @@ curl -X GET http://localhost:PORT/users/logout \
 ### Notes
 - After logout, the token will be blacklisted and can't be used for future requests
 - The token will be removed from cookies if it
+
+
+
+# Captain Routes Documentation
+
+## Authentication
+All protected routes require JWT token in either:
+- Authorization header: `Bearer <token>`
+- Cookie: `token=<token>`
+
+## Available Endpoints
+
+### Register Captain
+`POST /captains/register`
+
+Registers a new captain with vehicle details.
+
+#### Request Body
+```json
+{
+  "fullname": {
+    "firstname": "string",
+    "lastname": "string"
+  },
+  "email": "string",
+  "password": "string",
+  "vehicle": {
+    "color": "string",
+    "plate": "string",
+    "capacity": "number",
+    "type": "string"
+  }
+}
+```
+
+#### Validation Rules
+- `firstname`: Required, minimum 3 characters
+- `lastname`: Optional, minimum 3 characters if provided
+- `email`: Required, valid email format
+- `password`: Required, minimum 6 characters
+- `vehicle.color`: Required, minimum 3 characters
+- `vehicle.plate`: Required, minimum 3 characters
+- `vehicle.capacity`: Required, number between 1-10
+- `vehicle.type`: Required, must be one of: ["car", "motorcycle", "auto"]
+
+#### Success Response
+**Status:** 201 Created
+```json
+{
+  "token": "jwt_token_string",
+  "captain": {
+    "_id": "captain_id",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john@example.com",
+    "vehicle": {
+      "color": "Black",
+      "plate": "ABC123",
+      "capacity": 4,
+      "type": "car"
+    },
+    "status": "inactive"
+  }
+}
+```
+
+#### Error Responses
+
+**Invalid Input (400 Bad Request)**
+```json
+{
+  "errors": [
+    {
+      "msg": "First name must be at least 3 characters",
+      "param": "fullname.firstname",
+      "location": "body"
+    }
+  ]
+}
+```
+
+**Email Already Exists (409 Conflict)**
+```json
+{
+  "message": "Email already registered"
+}
+```
+
+### Example Request
+```bash
+curl -X POST http://localhost:3000/captains/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.driver@example.com",
+    "password": "password123",
+    "vehicle": {
+      "color": "Black",
+      "plate": "ABC123",
+      "capacity": 4,
+      "type": "car"
+    }
+  }'
+```
+
+## Notes
+- New captains are set to "inactive" status by default
+- Passwords are hashed before storage
+- JWT tokens expire in 24 hours
+- Vehicle capacity must be a number between 1-10
+- Vehicle type must be one of
