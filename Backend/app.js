@@ -46,6 +46,11 @@ app.use('/users' , userroutes)
 
 
 
+// step - 14
+// captain routes
+const captainroutes = require('./routes/captain.routes');
+app.use('/captains' , captainroutes);
+
 
 
 
