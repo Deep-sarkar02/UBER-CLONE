@@ -27,5 +27,36 @@ router.post('/register',
 
 
 
+//===================step-16==================
+//cretae the route to login the captain
+router.post('/login', 
+    [
+        body('email').isEmail().withMessage('Invalid Email'),
+        body('password').isLength({ min: 3 }).withMessage("Password must be at least 6 characters long")
+    ], 
+    captainController.loginCaptain
+);
+
+
+//===================step-19==================
+// create the route to get the captain profile
+const authMiddleware = require('../middlewares/auth.middleware');
+router.get('/profile',
+    // we will use the middleware to check the token
+    authMiddleware.authCaptain,
+    captainController.getCaptainProfile
+);
+
+
+
+//===================step-21==================
+//cretae a logout route for the captain
+router.get('/logout',
+    // we will use the middleware to check the token
+    authMiddleware.authCaptain,
+    captainController.logoutCaptain
+);
+
+
 module.exports = router;
 // now we will use this in qpp.js file

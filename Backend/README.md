@@ -373,3 +373,153 @@ curl -X POST http://localhost:3000/captains/register \
 - JWT tokens expire in 24 hours
 - Vehicle capacity must be a number between 1-10
 - Vehicle type must be one of
+
+# Captain API Documentation
+
+## Base URL: `/captains`
+
+## Endpoints
+
+### 1. Register Captain
+**POST** `/captains/register`
+
+Register a new captain with vehicle details.
+
+#### Request Body
+```json
+{
+  "fullname": {
+    "firstname": "string", // Required, min 3 characters
+    "lastname": "string"   // Optional, min 3 characters if provided
+  },
+  "email": "string",      // Required, valid email format
+  "password": "string",   // Required, min 6 characters
+  "vehicle": {
+    "color": "string",    // Required, min 3 characters
+    "plate": "string",    // Required, min 3 characters
+    "capacity": "number", // Required, between 1-10
+    "type": "string"      // Required, one of: ["car", "motorcycle", "auto"]
+  }
+}
+```
+
+#### Success Response (201)
+```json
+{
+  "token": "string",      // JWT token for authentication
+  "captain": {
+    "_id": "string",      // MongoDB generated ID
+    "fullname": {
+      "firstname": "string",
+      "lastname": "string"
+    },
+    "email": "string",
+    "vehicle": {
+      "color": "string",
+      "plate": "string",
+      "capacity": "number",
+      "type": "string"
+    },
+    "status": "string"    // Default: "inactive"
+  }
+}
+```
+
+### 2. Login Captain
+**POST** `/captains/login`
+
+#### Request Body
+```json
+{
+  "email": "string",    // Required, registered email
+  "password": "string"  // Required, min 6 characters
+}
+```
+
+#### Success Response (200)
+```json
+{
+  "token": "string",    // JWT token for authentication
+  "captain": {
+    // Same structure as register response
+  }
+}
+```
+
+### 3. Get Captain Profile
+**GET** `/captains/profile`
+
+#### Headers
+```json
+{
+  "Authorization": "Bearer <token>"  // Required, JWT token
+}
+```
+
+#### Success Response (200)
+```json
+{
+  "captain": {
+    "_id": "string",
+    "fullname": {
+      "firstname": "string",
+      "lastname": "string"
+    },
+    "email": "string",
+    "vehicle": {
+      "color": "string",
+      "plate": "string",
+      "capacity": "number",
+      "type": "string"
+    },
+    "status": "string"
+  }
+}
+```
+
+### 4. Logout Captain
+**GET** `/captains/logout`
+
+#### Headers
+```json
+{
+  "Authorization": "Bearer <token>"  // Required, JWT token
+}
+```
+
+#### Success Response (200)
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+## Error Responses
+
+### Validation Error (400)
+```json
+{
+  "errors": [
+    {
+      "msg": "string",      // Error message
+      "param": "string",    // Field that caused the error
+      "location": "string"  // Location of the error (body, params, etc.)
+    }
+  ]
+}
+```
+
+### Authentication Error (401)
+```json
+{
+  "message": "string"  // Error message explaining the authentication failure
+}
+```
+
+### Notes
+- All tokens are blacklisted upon logout
+- Tokens expire after 24 hours
+- Vehicle capacity must be between 1-10 passengers
+- Vehicle type is restricted to: "car", "motorcycle", "auto"
+- Password is hashed before storage
+- Email must be unique in
